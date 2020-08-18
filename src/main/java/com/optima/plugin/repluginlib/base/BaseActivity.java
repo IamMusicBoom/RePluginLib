@@ -3,6 +3,8 @@ package com.optima.plugin.repluginlib.base;
 import android.Manifest;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.nfc.tech.NfcA;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -48,9 +50,9 @@ public class BaseActivity extends AppCompatActivity {
      * （1）宿主跳转插件
      * （2）插件之间跳转插件
      * （3）插件跳转宿主
+     *
      * @param intent
      * @param isOuterClass 是否为其他插件或宿主Activity
-     *
      */
     public void startActivity(Intent intent, boolean isOuterClass) {
         ComponentName component = intent.getComponent();
@@ -88,6 +90,69 @@ public class BaseActivity extends AppCompatActivity {
             super.startActivityForResult(intent, requestCode);// 插件内部跳转
         }
     }
+
+    /**
+     * 开启服务
+     *
+     * @param service
+     * @param isHostToPlugin 是否为宿主开启插件服务
+     * @return
+     */
+    public ComponentName startService(Intent service, boolean isHostToPlugin) {
+        if (isHostToPlugin) {
+            return P_Context.startPluginService(BaseActivity.this, service);
+        } else {
+            return super.startService(service);
+        }
+    }
+
+    /**
+     * 停止服务
+     *
+     * @param name
+     * @param isHostToPlugin 是否为宿主停止插件服务
+     * @return
+     */
+    public boolean stopService(Intent name, boolean isHostToPlugin) {
+        if (isHostToPlugin) {
+            return P_Context.stopPluginService(BaseActivity.this, name);
+        } else {
+            return super.stopService(name);
+        }
+    }
+
+
+    /**
+     * 绑定服务
+     *
+     * @param service
+     * @param conn
+     * @param isHostToPlugin 是否为宿主绑定插件服务
+     * @return
+     */
+    public boolean bindService(Intent service, ServiceConnection conn, boolean isHostToPlugin) {
+        if (isHostToPlugin) {
+            return P_Context.bindPluginService(BaseActivity.this, service, conn);
+        } else {
+            return super.bindService(service, conn, BIND_AUTO_CREATE);
+        }
+    }
+
+
+    /**
+     * 解绑服务
+     *
+     * @param conn
+     * @param isHostToPlugin 是否为宿主解绑插件服务
+     */
+    public void unbindService(ServiceConnection conn, boolean isHostToPlugin) {
+        if (isHostToPlugin) {
+            P_Context.unBindPluginService(BaseActivity.this, conn);
+        } else {
+            super.unbindService(conn);
+        }
+    }
+
 
     @Override
     protected void onDestroy() {

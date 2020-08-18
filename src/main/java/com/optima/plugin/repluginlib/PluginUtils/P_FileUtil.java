@@ -15,6 +15,7 @@ import java.util.List;
 /**
  * create by wma
  * on 2020/8/17 0017
+ * 插件文件工具类，之后会有插件的更新下载操作放在这里面
  */
 public class P_FileUtil {
     static String TAG = P_FileUtil.class.getSimpleName();
