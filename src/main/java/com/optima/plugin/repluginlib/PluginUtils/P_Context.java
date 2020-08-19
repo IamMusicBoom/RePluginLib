@@ -3,12 +3,17 @@ package com.optima.plugin.repluginlib.PluginUtils;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.CancellationSignal;
 
 import com.optima.plugin.repluginlib.base.BaseActivity;
 import com.qihoo360.replugin.RePlugin;
+import com.qihoo360.replugin.component.provider.PluginProviderClient;
 import com.qihoo360.replugin.component.service.PluginServiceClient;
 
 import java.security.PublicKey;
@@ -122,6 +127,7 @@ public class P_Context {
 
     /**
      * 绑定插件服务
+     *
      * @param context
      * @param intent
      * @param connection
@@ -133,10 +139,175 @@ public class P_Context {
 
     /**
      * 解绑插件服务
+     *
      * @param context
      * @param connection
      */
     public static void unBindPluginService(Context context, ServiceConnection connection) {
         PluginServiceClient.unbindService(context, connection);
     }
+
+
+
+    // ===========================================================================  ContentProvider 操作开始
+    // 注意：ContentProvider 操作中，使用谁的ContentProvider就需要谁的Context,类似SharedPreference
+
+    /**
+     * 宿主调用插件ContentProvider 插入
+     *
+     * @param hostContext
+     * @param uri
+     * @param values
+     * @return
+     */
+    public static Uri insertToHost(Context hostContext, Uri uri, ContentValues values) {
+        Uri insert = PluginProviderClient.insert(hostContext, uri, values);
+        return insert;
+    }
+
+    /**
+     * 宿主调用插件ContentProvider 删除
+     *
+     * @param hostContext
+     * @param uri
+     * @param selection
+     * @param selectionArgs
+     * @return
+     */
+    public static int deleteToHost(Context hostContext, Uri uri, String selection, String[] selectionArgs) {
+        int delete = PluginProviderClient.delete(hostContext, uri, selection, selectionArgs);
+        return delete;
+    }
+
+    /**
+     * 宿主调用插件ContentProvider 修改
+     *
+     * @param hostContext
+     * @param uri
+     * @param values
+     * @param selection
+     * @param selectionArgs
+     * @return
+     */
+    public static int updateToHost(Context hostContext, Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        int update = PluginProviderClient.update(hostContext, uri, values, selection, selectionArgs);
+        return update;
+    }
+
+    /**
+     * 宿主调用插件ContentProvider 查询
+     *
+     * @param hostContext
+     * @param uri
+     * @param projection
+     * @param selection
+     * @param selectionArgs
+     * @param sortOrder
+     * @param cancellationSignal
+     * @return
+     */
+    public static Cursor queryToHost(Context hostContext, Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder, CancellationSignal cancellationSignal) {
+        Cursor query = PluginProviderClient.query(hostContext, uri, projection, selection, selectionArgs, sortOrder, cancellationSignal);
+        return query;
+    }
+
+    /**
+     * 宿主调用插件ContentProvider 查询
+     *
+     * @param hostContext
+     * @param uri
+     * @param projection
+     * @param selection
+     * @param selectionArgs
+     * @param sortOrder
+     * @return
+     */
+    public static Cursor queryToHost(Context hostContext, Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        Cursor query = PluginProviderClient.query(hostContext, uri, projection, selection, selectionArgs, sortOrder);
+        return query;
+    }
+
+
+    /**
+     * 宿主调用插件ContentProvider 插入
+     *
+     * @param pluginName
+     * @param uri
+     * @param values
+     * @return
+     */
+    public static Uri insert(String pluginName, Uri uri, ContentValues values) {
+        Context context = RePlugin.fetchContext(pluginName);
+        Uri insert = PluginProviderClient.insert(context, uri, values);
+        return insert;
+    }
+
+    /**
+     * 宿主调用插件ContentProvider 删除
+     *
+     * @param pluginName
+     * @param uri
+     * @param selection
+     * @param selectionArgs
+     * @return
+     */
+    public static int delete(String pluginName, Uri uri, String selection, String[] selectionArgs) {
+        Context context = RePlugin.fetchContext(pluginName);
+        int delete = PluginProviderClient.delete(context, uri, selection, selectionArgs);
+        return delete;
+    }
+
+    /**
+     * 宿主调用插件ContentProvider 修改
+     *
+     * @param pluginName
+     * @param uri
+     * @param values
+     * @param selection
+     * @param selectionArgs
+     * @return
+     */
+    public static int update(String pluginName, Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        Context context = RePlugin.fetchContext(pluginName);
+        int update = PluginProviderClient.update(context, uri, values, selection, selectionArgs);
+        return update;
+    }
+
+    /**
+     * 宿主调用插件ContentProvider 查询
+     *
+     * @param pluginName
+     * @param uri
+     * @param projection
+     * @param selection
+     * @param selectionArgs
+     * @param sortOrder
+     * @param cancellationSignal
+     * @return
+     */
+    public static Cursor query(String pluginName, Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder, CancellationSignal cancellationSignal) {
+        Context context = RePlugin.fetchContext(pluginName);
+        Cursor query = PluginProviderClient.query(context, uri, projection, selection, selectionArgs, sortOrder, cancellationSignal);
+        return query;
+    }
+
+    /**
+     * 宿主调用插件ContentProvider 查询
+     *
+     * @param pluginName
+     * @param uri
+     * @param projection
+     * @param selection
+     * @param selectionArgs
+     * @param sortOrder
+     * @return
+     */
+    public static Cursor query(String pluginName, Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        Context context = RePlugin.fetchContext(pluginName);
+        Cursor query = PluginProviderClient.query(context, uri, projection, selection, selectionArgs, sortOrder);
+        return query;
+    }
+    // ===========================================================================  ContentProvider 结束
+
+
 }

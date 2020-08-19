@@ -20,4 +20,7 @@ public class P_Constants {
     public static final String INTENT_KEY = "intent_key";
     public static final String INTENT_VALUE = "intent_value";
     public static final String ACTION_BROADCAST_RECEIVER = "com.optima.plugin.host.ACTION_BROADCAST_RECEIVER";
-        }
+    public static final String HOST_PROVIDER_URI = "content://com.optima.plugin.host";
+    public static final String PLUGIN1_PROVIDER_URI = "content://com.optima.plugin.plugin1";
+    public static final String PLUGIN2_PROVIDER_URI = "content://com.optima.plugin.plugin2";
+}
