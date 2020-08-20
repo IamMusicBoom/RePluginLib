@@ -57,6 +57,23 @@ public class P_Context {
         }
     }
 
+    /**
+     * 获取宿主的 ClassLoader
+     *
+     * @return
+     */
+    public static ClassLoader getHostClassLoader() {
+        return RePlugin.getHostClassLoader();
+    }
+
+    /**
+     * 获取插件的 ClassLoader
+     *
+     * @return
+     */
+    public static ClassLoader getPluginClassLoader(String pluginName) {
+        return RePlugin.fetchClassLoader(pluginName);
+    }
 
     /**
      * 获取某个插件的Context;
@@ -146,7 +163,6 @@ public class P_Context {
     public static void unBindPluginService(Context context, ServiceConnection connection) {
         PluginServiceClient.unbindService(context, connection);
     }
-
 
 
     // ===========================================================================  ContentProvider 操作开始

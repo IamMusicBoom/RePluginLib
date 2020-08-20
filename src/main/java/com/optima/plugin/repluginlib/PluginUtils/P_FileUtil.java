@@ -45,6 +45,7 @@ public class P_FileUtil {
 
             if (info != null) {
                 Logger.d("WMA-WMA", "simulateInstallExternalPlugin: 插件加载成功： " + info.getName());
+                RePlugin.preload(info.getName());// 提前释放dex文件
             } else {
                 Logger.d("WMA-WMA", "simulateInstallExternalPlugin: 插件加失败： ");
             }
