@@ -34,4 +34,6 @@ public class P_Constants {
     public static final int TARGET_TYPE_START_SERVICE = 1;// 开启服务
     public static final int TARGET_TYPE_SEND_BROADCAST = 2;// 发送广播
     // 中转 Activity 使用的常量 --------- end
+    public static final String LOCK_SCREEN_BINDER = "LOCK_SCREEN_BINDER";// 锁屏幕
+
 }

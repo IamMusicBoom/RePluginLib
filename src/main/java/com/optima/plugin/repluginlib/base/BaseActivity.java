@@ -29,10 +29,6 @@ public class BaseActivity extends AppCompatActivity {
         TAG = this.getClass().getSimpleName();
         setTitle(this.getClass().getSimpleName());
         Intent intent = getIntent();
-        if (intent != null) {
-            String stringExtra = intent.getStringExtra(P_Constants.INTENT_KEY);
-            Logger.d(TAG, "onCreate: stringExtra = " + stringExtra);
-        }
     }
 
 
