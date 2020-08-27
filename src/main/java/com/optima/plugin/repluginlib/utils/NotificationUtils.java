@@ -4,17 +4,13 @@ package com.optima.plugin.repluginlib.utils;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
 import com.optima.plugin.repluginlib.PluginUtils.P_Constants;
 import com.optima.plugin.repluginlib.PluginUtils.P_Context;
@@ -28,10 +24,12 @@ public class NotificationUtils {
 
     private NotificationManager mManager;
     private String mChannelImportanceId = "9998";
+    private String mChannelDownloadId = "9997";
     private String mChannelImportanceName = "importance";
     private String mChannelDefaultId = "9999";
     private String mChannelDefaultName = "default";
     private String mChannelGroupId = P_Constants.HOST_PACKAGE_NAME;
+    private String mDownloadChannelGroupId = P_Constants.HOST_PACKAGE_NAME + ".download";
     private Context mContext;
     private String contentText;
     private String contentTitle;
@@ -44,11 +42,16 @@ public class NotificationUtils {
     }
 
 
-
-
+    /**
+     * 创建一个重要的频道
+     *
+     * @param channelId
+     * @param channelName
+     * @return
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private NotificationChannel createImportanceChannel() {
-        NotificationChannel channel = new NotificationChannel(mChannelImportanceId, mChannelImportanceName, NotificationManager.IMPORTANCE_HIGH);
+    private NotificationChannel createImportanceChannel(String channelId, String channelName) {
+        NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
         mManager.createNotificationChannel(channel);
         channel.setGroup(mChannelGroupId);// 给 channel 分配组
         channel.enableLights(true);// 是否可以亮呼吸灯
@@ -58,7 +61,6 @@ public class NotificationUtils {
         channel.setBypassDnd(true);// 是否可以打断用户
         channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);// 设置是否锁屏后可见
         channel.setShowBadge(true);// Launcher图标上是否可显示消息
-
 //        channel.setSound();// 设置提示声音
         return channel;
     }
@@ -70,7 +72,7 @@ public class NotificationUtils {
      */
     public NotificationCompat.Builder createImportanceBuilder() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createImportanceChannel();
+            createImportanceChannel(mChannelImportanceId, mChannelImportanceName);
         }
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, mChannelImportanceId);
         builder.setPriority(NotificationCompat.PRIORITY_MAX)
@@ -88,9 +90,16 @@ public class NotificationUtils {
     }
 
 
+    /**
+     * 创建一个默认频道
+     *
+     * @param channelId
+     * @param channelName
+     * @return
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private NotificationChannel createDefaultChannel() {
-        NotificationChannel channel = new NotificationChannel(mChannelDefaultId, mChannelDefaultName, NotificationManager.IMPORTANCE_LOW);
+    private NotificationChannel createDefaultChannel(String channelId, String channelName) {
+        NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW);
         mManager.createNotificationChannel(channel);
         channel.setGroup(mChannelGroupId);// 给 channel 分配组
         channel.enableLights(true);// 是否可以亮呼吸灯
@@ -112,7 +121,7 @@ public class NotificationUtils {
      */
     public NotificationCompat.Builder createDefaultBuilder() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createDefaultChannel();
+            createDefaultChannel(mChannelDefaultId, mChannelDefaultName);
         }
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, mChannelDefaultId);
         builder.setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -133,8 +142,58 @@ public class NotificationUtils {
         mManager.notify(notificationId, notification);
     }
 
-    public void cancelNotification(int id){
+
+    public void cancelNotification(int id) {
         mManager.cancel(id);
     }
 
+
+    /**
+     * 创建下载通知的Builder
+     *
+     * @return
+     */
+    public NotificationCompat.Builder createDownloadBuilder(int max, int process) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createImportanceChannel(mChannelDownloadId, mChannelImportanceName);
+        }
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, mChannelImportanceId);
+        builder.setPriority(NotificationCompat.PRIORITY_MAX)
+                .setContentTitle(contentTitle)
+                .setContentText(contentText)
+                .setSmallIcon(smallIcon)
+                .setLargeIcon(largeIcon)
+                .setAutoCancel(false)
+                .setOnlyAlertOnce(true)
+                .setVibrate(new long[]{1000, 500, 2000})
+                .setAutoCancel(false)
+                .setGroup(mDownloadChannelGroupId)
+                .setProgress(max, process, false)
+                .setLights(Color.RED, 1000, 1000)
+                .setShowWhen(true)
+                .setWhen(System.currentTimeMillis());
+        return builder;
+
+    }
+
+    /**
+     * 更新下载notification
+     *
+     * @param notificationId
+     * @param max
+     * @param process
+     * @param builder
+     */
+    public void updateDownloadNotification(int notificationId, int max, int process, NotificationCompat.Builder builder) {
+        if (process != max) {
+            builder.setProgress(max, process, false);
+            builder.setContentTitle("正在下载");
+            builder.setContentText((process * 100 / max) + "%");
+        } else {
+            builder.setProgress(0, 0, false);
+            builder.setContentTitle("下载完毕");
+            builder.setContentText("等待安装");
+        }
+        showNotification(notificationId, builder.build());
+    }
 }
