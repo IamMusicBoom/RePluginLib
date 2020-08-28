@@ -36,4 +36,5 @@ public class P_Constants {
     // 中转 Activity 使用的常量 --------- end
     public static final String LOCK_SCREEN_BINDER = "LOCK_SCREEN_BINDER";// 锁屏幕
 
+    public static final String HOST_BINDER = "HOST_BINDER";
 }
