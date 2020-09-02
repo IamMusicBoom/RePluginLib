@@ -1,4 +1,4 @@
-package com.optima.plugin.repluginlib.PluginUtils;
+package com.optima.plugin.repluginlib.pluginUtils;
 
 import android.app.ActivityManager;
 import android.content.Context;
@@ -20,7 +20,7 @@ public class P_Manager {
      * @param pluginName
      * @return
      */
-    public boolean isPluginRunning(String pluginName) {
+    public static boolean isPluginRunning(String pluginName) {
         return RePlugin.isPluginRunning(pluginName);
     }
 
@@ -30,7 +30,7 @@ public class P_Manager {
      * @param pluginName
      * @return
      */
-    public boolean isPluginDexExtracted(String pluginName) {
+    public static boolean isPluginDexExtracted(String pluginName) {
         return RePlugin.isPluginDexExtracted(pluginName);
     }
 
@@ -41,7 +41,7 @@ public class P_Manager {
      * @param processName
      * @return
      */
-    public boolean isPluginRunningInProcess(String pluginName, String processName) {
+    public static boolean isPluginRunningInProcess(String pluginName, String processName) {
         return RePlugin.isPluginRunningInProcess(pluginName, processName);
     }
 
@@ -51,7 +51,7 @@ public class P_Manager {
      * @param pluginName
      * @return
      */
-    public boolean isPluginInstalled(String pluginName) {
+    public static boolean isPluginInstalled(String pluginName) {
         return RePlugin.isPluginInstalled(pluginName);
     }
 
@@ -61,7 +61,7 @@ public class P_Manager {
      * @param pluginName
      * @return
      */
-    public boolean isPluginUsed(String pluginName) {
+    public static boolean isPluginUsed(String pluginName) {
         return RePlugin.isPluginUsed(pluginName);
     }
 
@@ -72,7 +72,7 @@ public class P_Manager {
      * @param pluginName
      * @return
      */
-    public int getPluginVersion(String pluginName) {
+    public static int getPluginVersion(String pluginName) {
         return RePlugin.getPluginVersion(pluginName);
     }
 
@@ -83,7 +83,7 @@ public class P_Manager {
      * @param pluginName
      * @return
      */
-    private PluginInfo getPluginInfo(String pluginName) {
+    private static PluginInfo getPluginInfo(String pluginName) {
         PluginInfo pluginInfo = null;
         return RePlugin.getPluginInfo(pluginName);
     }
@@ -94,7 +94,7 @@ public class P_Manager {
      * @param pluginName
      * @return
      */
-    public String getPluginPackageName(String pluginName) {
+    public static String getPluginPackageName(String pluginName) {
         PluginInfo pluginInfo = getPluginInfo(pluginName);
         return pluginInfo.getPackageName();
     }
@@ -106,7 +106,7 @@ public class P_Manager {
      * @param pluginName
      * @return
      */
-    public String getPluginPath(String pluginName) {
+    public static String getPluginPath(String pluginName) {
         PluginInfo pluginInfo = getPluginInfo(pluginName);
         return pluginInfo.getPath();
     }
@@ -116,7 +116,7 @@ public class P_Manager {
      *
      * @return
      */
-    public List<PluginInfo> getPluginInfo() {
+    public static List<PluginInfo> getPluginInfo() {
         return RePlugin.getPluginInfoList();
     }
 
@@ -127,13 +127,9 @@ public class P_Manager {
      * @param path
      * @return
      */
-    public boolean install(String path) {
+    public static PluginInfo install(String path) {
         PluginInfo p = RePlugin.install(path);
-        if (p == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return p;
     }
 
     /**
@@ -142,7 +138,7 @@ public class P_Manager {
      * @param pluginName
      * @return
      */
-    public boolean preload(String pluginName) {
+    public static boolean preload(String pluginName) {
         return RePlugin.preload(pluginName);
     }
 

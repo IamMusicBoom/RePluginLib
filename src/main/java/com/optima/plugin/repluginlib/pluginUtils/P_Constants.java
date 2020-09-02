@@ -1,4 +1,4 @@
-package com.optima.plugin.repluginlib.PluginUtils;
+package com.optima.plugin.repluginlib.pluginUtils;
 
 /**
  * create by wma
@@ -9,7 +9,7 @@ package com.optima.plugin.repluginlib.PluginUtils;
 public class P_Constants {
     public static final int REQUEST_CODE = 101;
 
-    public static final String HOST_PACKAGE_NAME = "com.optima.plugin.host";
+    public static final String HOST_PACKAGE_NAME = P_Context.getHostContext().getPackageName();
 
 
     public static final String ALIAS_PLUGIN_1 = "plugin1";

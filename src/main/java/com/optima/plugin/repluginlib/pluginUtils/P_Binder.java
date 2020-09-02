@@ -1,4 +1,4 @@
-package com.optima.plugin.repluginlib.PluginUtils;
+package com.optima.plugin.repluginlib.pluginUtils;
 
 import android.os.IBinder;
 

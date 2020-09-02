@@ -1,4 +1,4 @@
-package com.optima.plugin.repluginlib.PluginUtils;
+package com.optima.plugin.repluginlib.pluginUtils;
 
 
 import android.app.Activity;
@@ -11,12 +11,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.CancellationSignal;
 
-import com.optima.plugin.repluginlib.base.BaseActivity;
+import com.optima.plugin.repluginlib.Logger;
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.component.provider.PluginProviderClient;
 import com.qihoo360.replugin.component.service.PluginServiceClient;
-
-import java.security.PublicKey;
 
 /**
  * create by wma
@@ -51,7 +49,11 @@ public class P_Context {
      */
     public static Context getHostContext() {
         try {
-            return RePlugin.getHostContext();
+            Context context = RePlugin.getHostContext();
+            if(context == null){
+                context = getContext();
+            }
+            return context;
         } catch (NoSuchMethodError error) {
             return getContext();
         }
