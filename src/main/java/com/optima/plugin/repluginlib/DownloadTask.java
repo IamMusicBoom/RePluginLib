@@ -27,9 +27,9 @@ public class DownloadTask {
     private NotificationCompat.Builder notificationBuilder;
     private NotificationUtils notificationUtils;
     private Callback.Cancelable downloadCancelable;
-    private HashMap<String,Callback.Cancelable> cancelableHashMap = new HashMap<>();
+    private HashMap<String, Callback.Cancelable> cancelableHashMap = new HashMap<>();
 
-    public DownloadTask(Context context,int notificationId) {
+    public DownloadTask(Context context, int notificationId) {
         mContext = context;
         PLUGIN_FILE_LOCAL_PATH = mContext.getExternalFilesDir(FOLDER_NAME).getAbsolutePath();
         notificationUtils = new NotificationUtils();
@@ -83,15 +83,15 @@ public class DownloadTask {
     }
 
 
-    public void cancelDownLoadTasks(){
+    public void cancelDownLoadTasks() {
         for (String pluginName : cancelableHashMap.keySet()) {
             cancelDownloadTask(pluginName);
         }
     }
 
-    public void cancelDownloadTask(String pluginName){
+    public void cancelDownloadTask(String pluginName) {
         Callback.Cancelable cancelable = cancelableHashMap.get(pluginName);
-        if(cancelable != null){
+        if (cancelable != null) {
             cancelable.cancel();
             cancelable = null;
         }
@@ -117,7 +117,7 @@ public class DownloadTask {
         public void run() {
             super.run();
             downloadCancelable = download();
-            cancelableHashMap.put(fileName,downloadCancelable);
+            cancelableHashMap.put(fileName, downloadCancelable);
         }
 
         private Callback.Cancelable download() {
@@ -126,6 +126,9 @@ public class DownloadTask {
             Callback.Cancelable cancelable = x.http().get(params, new Callback.ProgressCallback<File>() {
                 @Override
                 public void onSuccess(File result) {
+                    if (callback != null) {
+                        callback.onSuccess(result);
+                    }
                     if (isAutoInstall) {
                         PluginInfo pluginInfo = P_Manager.install(result.getAbsolutePath());
                         if (pluginInfo != null && isAutoPreload) {
@@ -133,7 +136,7 @@ public class DownloadTask {
                         } else {
                             Logger.d(TAG, "onSuccess: pluginInfo = " + pluginInfo + " isAutoPreload = " + isAutoPreload);
                         }
-                    }else{
+                    } else {
                         Logger.d(TAG, "onSuccess: isAutoInstall = " + isAutoInstall + " file = " + result.getAbsolutePath());
                     }
                 }
@@ -141,39 +144,79 @@ public class DownloadTask {
                 @Override
                 public void onError(Throwable ex, boolean isOnCallback) {
                     Logger.e(TAG, "onError: ex = " + ex);
+                    if (callback != null) {
+                        callback.onError(ex, isOnCallback);
+                    }
                 }
 
                 @Override
                 public void onCancelled(CancelledException cex) {
                     Logger.d(TAG, "onCancelled: ");
+                    if (callback != null) {
+                        callback.onCancelled(cex);
+                    }
                 }
 
                 @Override
                 public void onFinished() {
                     Logger.d(TAG, "onFinished: ");
                     notificationUtils.cancelNotification(notificationId);
+                    if (callback != null) {
+                        callback.onFinished();
+                    }
                 }
 
                 @Override
                 public void onWaiting() {
                     Logger.d(TAG, "onWaiting: ");
+                    if (callback != null) {
+                        callback.onWaiting();
+                    }
                 }
 
                 @Override
                 public void onStarted() {
                     Logger.d(TAG, "onStarted: ");
                     notificationUtils.showNotification(notificationId, notificationBuilder.build());
+                    if (callback != null) {
+                        callback.onStarted();
+                    }
                 }
 
                 @Override
                 public void onLoading(long total, long current, boolean isDownloading) {
                     Logger.d(TAG, "onLoading: ");
                     notificationUtils.updateDownloadNotification(notificationId, 100, (int) ((current * 100) / total), notificationBuilder);
+                    if (callback != null) {
+                        callback.onLoading(total, current, isDownloading);
+                    }
                 }
             });
             return cancelable;
         }
     }
 
+
+    CallBackListener callback;
+
+    public void setCallback(CallBackListener callback) {
+        this.callback = callback;
+    }
+
+    public interface CallBackListener {
+        void onSuccess(File result);
+
+        void onError(Throwable ex, boolean isOnCallback);
+
+        void onCancelled(Callback.CancelledException cex);
+
+        void onFinished();
+
+        void onWaiting();
+
+        void onStarted();
+
+        void onLoading(long total, long current, boolean isDownloading);
+    }
 
 }
