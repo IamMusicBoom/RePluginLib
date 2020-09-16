@@ -5,6 +5,7 @@ import android.content.Context;
 import com.optima.plugin.repluginlib.Logger;
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.component.ComponentList;
+import com.qihoo360.replugin.helper.LogDebug;
 import com.qihoo360.replugin.model.PluginInfo;
 import com.qihoo360.replugin.utils.FileUtils;
 
@@ -40,15 +41,16 @@ public class P_FileUtil {
             // 开始复制
             copyAssetsFileToAppFiles(filePath, fileName);
             if (pluginFile.exists()) {
+                Logger.d(TAG, "simulateInstallExternalPlugin: pluginFile.exists() = " + pluginFile.exists() + " pluginFile = " + pluginFile.getAbsolutePath());
                 info = RePlugin.install(pluginFilePath);
             }
-
             if (info != null) {
                 Logger.d("WMA-WMA", "simulateInstallExternalPlugin: 插件加载成功： " + info.getName());
 //                RePlugin.preload(info.getName());// 提前释放dex文件
             } else {
                 Logger.d("WMA-WMA", "simulateInstallExternalPlugin: 插件加失败： ");
             }
+            Logger.d(TAG, "simulateInstallExternalPlugin: pluginFile.exists() = " + pluginFile.exists() +  " pluginFile = " + pluginFile.getAbsolutePath());
         }
 
     }

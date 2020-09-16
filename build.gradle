@@ -34,6 +34,7 @@ dependencies {
     api 'androidx.recyclerview:recyclerview:1.1.0'
     api 'org.xutils:xutils:3.8.8'
     api 'com.google.code.gson:gson:2.8.6'
+    api 'com.google.android.material:material:1.0.0'
     compileOnly 'com.qihoo360.replugin:replugin-plugin-lib:2.3.3'
     compileOnly 'com.qihoo360.replugin:replugin-host-lib:2.3.3'
 }

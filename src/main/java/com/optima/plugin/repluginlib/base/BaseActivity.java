@@ -2,6 +2,7 @@ package com.optima.plugin.repluginlib.base;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 
@@ -9,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.optima.plugin.repluginlib.Logger;
+import com.optima.plugin.repluginlib.VerifyVersionReceiver;
 import com.optima.plugin.repluginlib.pluginUtils.P_Constants;
 import com.optima.plugin.repluginlib.pluginUtils.P_Context;
 
@@ -18,15 +20,51 @@ import com.optima.plugin.repluginlib.pluginUtils.P_Context;
  */
 public class BaseActivity extends AppCompatActivity {
     public String TAG;
-
+    VerifyVersionReceiver receiver;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TAG = this.getClass().getSimpleName();
         setTitle(this.getClass().getSimpleName());
         Intent intent = getIntent();
+
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        receiver = new VerifyVersionReceiver(this);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("Test");
+        registerReceiver(receiver,filter);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -147,16 +185,13 @@ public class BaseActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
     public void onBackPressed() {
         Intent data = new Intent();
         data.putExtra(P_Constants.INTENT_KEY, "WMA-OK");
         setResult(RESULT_OK, data);
         super.onBackPressed();
     }
+
+
 
 }

@@ -1,12 +1,12 @@
-package com.optima.plugin.repluginlib;
+package com.optima.plugin.repluginlib.download;
 
 import android.content.Context;
 
 import androidx.core.app.NotificationCompat;
 
-import com.optima.plugin.repluginlib.pluginUtils.P_Manager;
+import com.optima.plugin.repluginlib.Logger;
+import com.optima.plugin.repluginlib.pluginUtils.P_Context;
 import com.optima.plugin.repluginlib.utils.NotificationUtils;
-import com.qihoo360.replugin.model.PluginInfo;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -18,61 +18,62 @@ import java.util.HashMap;
 /**
  * create by wma
  * on 2020/9/1 0001
+ * 下载任务
  */
 public class DownloadTask {
     private final String TAG = DownloadTask.class.getSimpleName();
     private final String PLUGIN_FILE_LOCAL_PATH;
     public static final String FOLDER_NAME = "plugin";
     private Context mContext;
-    private NotificationCompat.Builder notificationBuilder;
+    /**
+     * 通知栏
+     */
     private NotificationUtils notificationUtils;
+    private NotificationCompat.Builder notificationBuilder;
+
     private Callback.Cancelable downloadCancelable;
+
+    /**
+     * 任务执行map
+     */
     private HashMap<String, Callback.Cancelable> cancelableHashMap = new HashMap<>();
-
-    public DownloadTask(Context context, int notificationId) {
-        mContext = context;
-        PLUGIN_FILE_LOCAL_PATH = mContext.getExternalFilesDir(FOLDER_NAME).getAbsolutePath();
-        notificationUtils = new NotificationUtils();
-        notificationBuilder = notificationUtils.createDownloadBuilder(100, 0);
-        this.notificationId = notificationId;
-    }
-
-
     /**
-     * 下载至本地后是否自动安装
+     * 下载文件名字，插件名字
      */
-    private boolean isAutoInstall = true;
-
+    private String fileName;
     /**
-     * 安装完成后是否直接释放dex文件，释放dex文件为耗时操作，需要放置在子线程中
+     * 下载地址
      */
-    private boolean isAutoPreload = true;
-
+    private String downloadUrl;
+    /**
+     * 下载回调
+     */
+    private CallbackListener callback;
     /**
      * 下载进度条ID
      */
     private int notificationId;
 
-
-    public void excuse(String pluginName, String url) {
-        new DownloadThread(pluginName, url).start();
+    public DownloadTask(String fileName, String downloadUrl, int notificationId) {
+        mContext = P_Context.getContext();
+        PLUGIN_FILE_LOCAL_PATH = mContext.getExternalFilesDir(FOLDER_NAME).getAbsolutePath();
+        notificationUtils = new NotificationUtils();
+        notificationBuilder = notificationUtils.createDownloadBuilder(100, 0);
+        this.fileName = fileName;
+        this.downloadUrl = downloadUrl;
+        this.notificationId = notificationId;
     }
 
-    public boolean isAutoInstall() {
-        return isAutoInstall;
+    public DownloadTask(String fileName, String downloadUrl) {
+        this(fileName, downloadUrl, -1);
     }
 
-    public void setAutoInstall(boolean autoInstall) {
-        isAutoInstall = autoInstall;
+
+    public void excuse(CallbackListener callback) {
+        this.callback = callback;
+        new DownloadThread().start();
     }
 
-    public boolean isAutoPreload() {
-        return isAutoPreload;
-    }
-
-    public void setAutoPreload(boolean autoPreload) {
-        isAutoPreload = autoPreload;
-    }
 
     public int getNotificationId() {
         return notificationId;
@@ -90,28 +91,18 @@ public class DownloadTask {
     }
 
     public void cancelDownloadTask(String pluginName) {
-        Callback.Cancelable cancelable = cancelableHashMap.get(pluginName);
-        if (cancelable != null) {
-            cancelable.cancel();
-            cancelable = null;
+        if (cancelableHashMap.containsKey(pluginName)) {
+            Callback.Cancelable cancelable = cancelableHashMap.get(pluginName);
+            if (cancelable != null) {
+                cancelable.cancel();
+                cancelable = null;
+                cancelableHashMap.put(pluginName, cancelable);
+            }
         }
     }
 
     class DownloadThread extends Thread {
-        /**
-         * 插件名字
-         */
-        private String fileName;
-        /**
-         * 插件下载地址
-         */
-        private String downloadUrl;
 
-
-        public DownloadThread(String fileName, String downloadUrl) {
-            this.fileName = fileName;
-            this.downloadUrl = downloadUrl;
-        }
 
         @Override
         public void run() {
@@ -128,16 +119,6 @@ public class DownloadTask {
                 public void onSuccess(File result) {
                     if (callback != null) {
                         callback.onSuccess(result);
-                    }
-                    if (isAutoInstall) {
-                        PluginInfo pluginInfo = P_Manager.install(result.getAbsolutePath());
-                        if (pluginInfo != null && isAutoPreload) {
-                            P_Manager.preload(pluginInfo.getName());
-                        } else {
-                            Logger.d(TAG, "onSuccess: pluginInfo = " + pluginInfo + " isAutoPreload = " + isAutoPreload);
-                        }
-                    } else {
-                        Logger.d(TAG, "onSuccess: isAutoInstall = " + isAutoInstall + " file = " + result.getAbsolutePath());
                     }
                 }
 
@@ -195,28 +176,4 @@ public class DownloadTask {
             return cancelable;
         }
     }
-
-
-    CallBackListener callback;
-
-    public void setCallback(CallBackListener callback) {
-        this.callback = callback;
-    }
-
-    public interface CallBackListener {
-        void onSuccess(File result);
-
-        void onError(Throwable ex, boolean isOnCallback);
-
-        void onCancelled(Callback.CancelledException cex);
-
-        void onFinished();
-
-        void onWaiting();
-
-        void onStarted();
-
-        void onLoading(long total, long current, boolean isDownloading);
-    }
-
 }
