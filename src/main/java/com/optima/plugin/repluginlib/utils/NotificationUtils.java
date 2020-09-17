@@ -161,7 +161,7 @@ public class NotificationUtils {
         builder.setPriority(NotificationCompat.PRIORITY_MAX)
                 .setContentTitle(contentTitle)
                 .setContentText(contentText)
-                .setSmallIcon(smallIcon)
+                .setSmallIcon(R.mipmap.ic_download)
                 .setLargeIcon(largeIcon)
                 .setAutoCancel(false)
                 .setOnlyAlertOnce(true)
