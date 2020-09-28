@@ -3,6 +3,7 @@ package com.optima.plugin.repluginlib.pluginUtils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+
 import java.util.Set;
 
 /**
@@ -73,6 +74,8 @@ public class P_SPManager {
         return pluginSP;
     }
 
+
+
     /**
      * 替换目前项目里面所有获取SharedPreference对象方法
      *
@@ -84,6 +87,38 @@ public class P_SPManager {
         SharedPreferences sp = getSP(spName, true);
         return sp;
     }
+
+    /**
+     * 替换项目获取userPreference方法
+     * @param spName
+     * @param mode
+     * @return
+     */
+    public static SharedPreferences getUserPreferences(String spName, int mode) {
+        SharedPreferences sp = getSP(spName, true);
+        return sp;
+    }
+
+    /**
+     * 替换项目获取userPreference方法
+     * @return
+     */
+    public static SharedPreferences getUserPreferences() {
+        return getSP("USER_PREFERENCES", true);
+    }
+
+
+    /**
+     * 替换项目获取BasePreferences方法
+     */
+    public static SharedPreferences getBasePreferences() {
+        return getSP("BASE_PREFERENCES", true);
+    }
+
+    public static SharedPreferences getConfigPreferences(){
+        return getSP("CONFIG_PREFERENCE", true);
+    }
+
 
 
     /**

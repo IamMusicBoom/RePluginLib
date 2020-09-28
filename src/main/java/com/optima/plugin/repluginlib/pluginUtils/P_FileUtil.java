@@ -1,17 +1,25 @@
 package com.optima.plugin.repluginlib.pluginUtils;
 
 import android.content.Context;
+import android.content.Intent;
+import android.text.TextUtils;
 
 import com.optima.plugin.repluginlib.Logger;
-import com.qihoo360.replugin.RePlugin;
-import com.qihoo360.replugin.component.ComponentList;
-import com.qihoo360.replugin.helper.LogDebug;
 import com.qihoo360.replugin.model.PluginInfo;
 import com.qihoo360.replugin.utils.FileUtils;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,6 +29,40 @@ import java.util.List;
  */
 public class P_FileUtil {
     static String TAG = P_FileUtil.class.getSimpleName();
+
+    /**
+     * 下载图标的文件夹名字
+     */
+    public static final String ICON_FOLDER = "icon";// 图标存放文件夹
+
+    /**
+     * 下载插件的文件夹名字
+     */
+    public static final String PLUGIN_FOLDER = "plugin";// 插件存放文件夹
+
+    /**
+     * 下载插件的文件夹名字
+     */
+    public static final String HOST_FOLDER = "host";// 宿主存放文件夹
+
+    /**
+     * 判断下载的某类型文件是否存在
+     *
+     * @param type 图标 {@link P_FileUtil#ICON_FOLDER},
+     *             插件 {@link P_FileUtil#PLUGIN_FOLDER},
+     *             宿主 {@link P_FileUtil#HOST_FOLDER}
+     * @param name
+     * @return
+     */
+    public static boolean isFileExists(String type, String name) {
+        String path = P_Context.getContext().getExternalFilesDir(type).getAbsolutePath() + File.separator + name;
+        File file = new File(path);
+        if (file.exists()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     /**
      * 模拟安装或升级（覆盖安装）外置插件
@@ -40,17 +82,20 @@ public class P_FileUtil {
 
             // 开始复制
             copyAssetsFileToAppFiles(filePath, fileName);
+
             if (pluginFile.exists()) {
-                Logger.d(TAG, "simulateInstallExternalPlugin: pluginFile.exists() = " + pluginFile.exists() + " pluginFile = " + pluginFile.getAbsolutePath());
-                info = RePlugin.install(pluginFilePath);
+                info = P_Manager.install(pluginFilePath);
             }
+
             if (info != null) {
                 Logger.d("WMA-WMA", "simulateInstallExternalPlugin: 插件加载成功： " + info.getName());
-//                RePlugin.preload(info.getName());// 提前释放dex文件
+                Logger.d("WMA-WMA", "simulateInstallExternalPlugin: 插件加载成功： " + info.getPath());
+
+//                parseXML(info);
+
             } else {
                 Logger.d("WMA-WMA", "simulateInstallExternalPlugin: 插件加失败： ");
             }
-            Logger.d(TAG, "simulateInstallExternalPlugin: pluginFile.exists() = " + pluginFile.exists() +  " pluginFile = " + pluginFile.getAbsolutePath());
         }
 
     }
@@ -86,4 +131,6 @@ public class P_FileUtil {
             }
         }
     }
+
+
 }

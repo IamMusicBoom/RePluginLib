@@ -84,7 +84,6 @@ public class P_Manager {
      * @return
      */
     private static PluginInfo getPluginInfo(String pluginName) {
-        PluginInfo pluginInfo = null;
         return RePlugin.getPluginInfo(pluginName);
     }
 
@@ -128,8 +127,7 @@ public class P_Manager {
      * @return
      */
     public static PluginInfo install(String path) {
-        PluginInfo p = RePlugin.install(path);
-        return p;
+        return RePlugin.install(path);
     }
 
     /**
